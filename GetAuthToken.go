@@ -1,14 +1,45 @@
 package main
 
 import (
-	"crypto/tls"
+	"flag"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 )
 
 func main() {
+
+	// New code from here
+
+	// Requesting flags to user via CLI.
+	// NOTE: flag.String returns a pointer.
+	clus := flag.String("clus", " ", "Server cluster Name")
+	user := flag.String("user", " ", "Username from cluster")
+	pass := flag.String("pass", " ", "Password from cluster")
+
+	// Execute the command-line parsing
+	flag.Parse()
+
+	// Convert the string pointer to a string
+	cluster := *clus
+	username := *user
+	password := *pass
+
+	// Define the components for the HTTP Request.
+	const method string = "POST"
+	protocol := "http://"
+	resource := "/auth/login"
+
+	// Concatenate to build the URL
+	url := fmt.Sprintf("%s%s%s", protocol, cluster, resource)
+	fmt.Println(url)
+
+	// Concatenate to build the payload
+	fmt.Println(url)
+	fmt.Println(username)
+	fmt.Println(password)
+
+	// New block of code until here above
+
+	/*  commenting out the rest of the code for now
 
 	// Define the components for the HTTP Request.
 	url := "https://xxxxxxxxxxxxxxx/auth/login"
@@ -52,4 +83,6 @@ func main() {
 	}
 
 	fmt.Println(string(body))
+
+	*/
 }
