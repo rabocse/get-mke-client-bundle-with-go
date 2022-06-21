@@ -12,7 +12,8 @@ func main() {
 
 	// Define the components for the HTTP Request.
 	url := "https://xxxxxxxxxxxxxxx/auth/login"
-	method := "POST"
+	const method string = "POST"
+	// method := "POST"
 	payload := strings.NewReader(`{
 		"username":"xxxxxxx",
 	"password":"xxxxxxxx"
