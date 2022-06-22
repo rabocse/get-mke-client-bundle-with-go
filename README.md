@@ -33,6 +33,8 @@ This is just an initial version, refactoring and additional capabilities will be
 
 ## How To Use the Scripts
 
+The first versions of the scripts work like this:
+
 ```
 ❯ ./GetAuthToken
 {"auth_token":"896386ba-15f2-4bc6-9be4-99eaf10ca345"}
@@ -61,11 +63,36 @@ drwxr-xr-x  16 aescobar  staff    512 Apr  1 14:22 ..
 -rw-r--r--   1 aescobar  staff  15524 Apr  1 14:25 clientbundle
 ```
 
+## Improvements (Work In Progress)
+
+Below is the current status for GetAuthToken script:
+
+```
+❯ ./GetAuthToken -clus=xxxxxxxxxxxxxx -user=xyxyxyxyxyx -pass=kkkkkkkkkkkkkkk
+########### INPUT: Server ##########################
+Cluster:  https://xxxxxxxxxxxxxx/auth/login
+ 
+########### INPUT: Credentials #####################
+Username:  xyxyxyxyxyx
+Password:  kkkkkkkkkkkkkkk
+ 
+########### PARSED INPUT: Credentials in JSON ######
+{"username":"xyxyxyxyxyx","password":"kkkkkkkkkkkkkkk"}
+ 
+########### OUTPUT: AUTH TOKEN #####################
+{"auth_token":"a4f4682c-1a61-41be-aa27-176b741420de"}
+```
+
+- GetAuthToken accepts flags that allow it to pass the url, username and password.
+- The printing of "INPUT" is only temporary and for verification purposes.
+  
+
 ## Refactoring
 
 - Group code in fuctions.
 - Create a single script.
 - Pass parameter to the script and avoid hardcoded values.
+- Mask the password entered by user.
 
 
 
