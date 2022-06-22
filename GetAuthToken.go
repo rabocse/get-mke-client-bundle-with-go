@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
+	"crypto/tls"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
 func main() {
-
-	// New code from here
 
 	// Requesting flags to user via CLI.
 	// NOTE: flag.String returns a pointer.
@@ -25,31 +28,36 @@ func main() {
 
 	// Define the components for the HTTP Request.
 	const method string = "POST"
-	protocol := "http://"
+
+	protocol := "https://"
 	resource := "/auth/login"
 
 	// Concatenate to build the URL
 	url := fmt.Sprintf("%s%s%s", protocol, cluster, resource)
-	fmt.Println(url)
+	fmt.Println("########### INPUT: Server ##########################")
+	fmt.Println("Cluster: ", url)
+	fmt.Println(" ")
+	fmt.Println("########### INPUT: Credentials #####################")
+	fmt.Println("Username: ", username)
+	fmt.Println("Password: ", password) // Just for testing purposes.
+	fmt.Println(" ")
 
-	// Concatenate to build the payload
-	fmt.Println(url)
-	fmt.Println(username)
-	fmt.Println(password)
+	// Marshall the credentials: From Go struct to JSON.
 
-	// New block of code until here above
-
-	/*  commenting out the rest of the code for now
-
-	// Define the components for the HTTP Request.
-	url := "https://xxxxxxxxxxxxxxx/auth/login"
-	const method string = "POST"
-	// method := "POST"
-	payload := strings.NewReader(`{
-		"username":"xxxxxxx",
-	"password":"xxxxxxxx"
+	type credentials struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
-	`)
+
+	cred := &credentials{Username: username, Password: password}
+	credJSON, err := json.Marshal(cred)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("########### PARSED INPUT: Credentials in JSON ######")
+	fmt.Println(string(credJSON))        // credJSON is type []byte
+	payload := bytes.NewReader(credJSON) // so credJSON needs to be converted io.Reader to be accepted by http.NewRequest
 
 	// Make the Go client to ignore the TLS verification
 	transCfg := &http.Transport{
@@ -81,8 +89,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
+	fmt.Println(" ")
+	fmt.Println("########### OUTPUT: AUTH TOKEN #####################")
 	fmt.Println(string(body))
 
-	*/
 }
