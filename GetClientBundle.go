@@ -1,11 +1,10 @@
-// This script prints the download file. Which is not that optimal since it needs to be unziped.
-
 package main
 
 import (
 	"archive/zip"
 	"bytes"
 	"crypto/tls"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,10 +19,33 @@ func main() {
 	// It will be used later...
 	zipFileName := "bundle.zip"
 	downloadedFileName := "clientbundle"
-	//
 
-	url := "https://xxxxxxxxxxx/api/clientbundle"
-	method := "GET"
+	// Requesting flags to user via CLI.
+	// NOTE: flag.String returns a pointer.
+	clus := flag.String("clus", " ", "Server cluster Name")
+	tokn := flag.String("tokn", " ", "Authentication Token from cluster")
+
+	// Execute the command-line parsing
+	flag.Parse()
+
+	// Convert the string pointer to a string
+	cluster := *clus
+	token := *tokn
+
+	// Define the components for the HTTP Request.
+	const method string = "GET"
+
+	protocol := "https://"
+	resource := "/api/clientbundle"
+
+	// Concatenate to build the URL
+	url := fmt.Sprintf("%s%s%s", protocol, cluster, resource)
+	fmt.Println("########### INPUT: Server ##########################")
+	fmt.Println("Cluster: ", url)
+	fmt.Println(" ")
+	fmt.Println("########### INPUT: Token #####################")
+	fmt.Println("Authentication Token: ", token) // Just for testing purposes.
+	fmt.Println(" ")
 
 	// Make the Go client to ignore the TLS verification
 	transCfg := &http.Transport{
@@ -40,9 +62,13 @@ func main() {
 		return
 	}
 
+	// Concatenate "Bearer" string + token varible to then pass in a Header
+
+	authToken := fmt.Sprintf("Bearer %s", token)
+
 	// Adding Authorization Header
-	req.Header.Add("Authorization", "Bearer ed840c02-9ece-4188-b910-17fc77bf14fb")
-	req.Header.Add("Accept-Encoding", "gzip") // I think this can be removed.
+	req.Header.Add("Authorization", authToken) //
+	req.Header.Add("Accept-Encoding", "gzip")  // I think this can be removed.
 
 	res, err := client.Do(req)
 	if err != nil {

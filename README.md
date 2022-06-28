@@ -31,7 +31,7 @@ To acomplish this we must get and authentication token before donwloading the fi
 
 This is just an initial version, refactoring and additional capabilities will be added later on.
 
-## How To Use the Scripts
+## How To Use the Scripts (As in main branch from this repo)
 
 The first versions of the scripts work like this:
 
@@ -63,7 +63,7 @@ drwxr-xr-x  16 aescobar  staff    512 Apr  1 14:22 ..
 -rw-r--r--   1 aescobar  staff  15524 Apr  1 14:25 clientbundle
 ```
 
-## Improvements (Work In Progress)
+## Improvements for GetAuthToken (Work In Progress)
 
 Below is the current status for GetAuthToken script:
 
@@ -86,6 +86,24 @@ Password:  kkkkkkkkkkkkkkk
 - GetAuthToken accepts flags that allow it to pass the url, username and password.
 - The printing of "INPUT" is only temporary and for verification purposes.
   
+
+## Improvements for GetClientBundle.go (Work In Progress)
+
+Below is the current status for GetAuthToken script:
+
+```
+❯ ./GetClientBundle -clus=xxxxxxxxxxx -tokn=a4f4682c-1a61-41be-aa27-176b741420de
+########### INPUT: Server ##########################
+Cluster:  https://xxxxxxxxxxxx/api/clientbundle
+
+########### INPUT: Token #####################
+Authentication Token: a4f4682c-1a61-41be-aa27-176b741420de
+Done.
+```
+
+- Similar as GetAuthToken, now GetClientBundle accepts flags.
+- The printing is only for verification purposes.
+
 
 ## Refactoring
 
