@@ -67,6 +67,22 @@ func craftPayload(userValue, passwordValue string) io.Reader {
 	return p
 }
 
+func craftRequest(m string, u string, p io.Reader) *http.Request {
+
+	// Build the request (req) with the previous components
+	req, err := http.NewRequest(m, u, p)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Header to specify that our request sends plain text format.
+	req.Header.Add("Content-Type", "text/plain")
+
+	return req
+
+}
+
 func main() {
 
 	cluster, username, password := flagsHandler()
@@ -75,23 +91,14 @@ func main() {
 
 	payload := craftPayload(username, password)
 
+	req := craftRequest(method, url, payload)
+
 	// Make the Go client to ignore the TLS verification
 	transCfg := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 
 	client := &http.Client{Transport: transCfg}
-
-	// Build the request (req) with the previous components
-	req, err := http.NewRequest(method, url, payload)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Header to specify that our request sends plain text format.
-	req.Header.Add("Content-Type", "text/plain")
 
 	res, err := client.Do(req)
 	if err != nil {
