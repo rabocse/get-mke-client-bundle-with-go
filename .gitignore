@@ -4,3 +4,5 @@ main.go
 main
 GetAuthToken
 GetClientBundle
+wip-GetAuthToken.go
+wip-GetAuthToken

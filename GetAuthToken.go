@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func flagsHandler() (c, u, p string) {
 
 	// Requesting flags to user via CLI.
 	// NOTE: flag.String returns a pointer.
@@ -22,9 +22,17 @@ func main() {
 	flag.Parse()
 
 	// Convert the string pointer to a string
-	cluster := *clus
-	username := *user
-	password := *pass
+	c = *clus
+	u = *user
+	p = *pass
+
+	return c, u, p
+
+}
+
+func main() {
+
+	cluster, username, password := flagsHandler()
 
 	// Define the components for the HTTP Request.
 	const method string = "POST"
