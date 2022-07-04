@@ -83,6 +83,32 @@ func craftRequest(m string, u string, p io.Reader) *http.Request {
 
 }
 
+func sendRequest(r *http.Request) string {
+
+	// Make the Go client to ignore the TLS verification
+	transCfg := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{Transport: transCfg}
+
+	res, err := client.Do(r)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	b := string(body)
+
+	return b
+
+}
+
 func main() {
 
 	cluster, username, password := flagsHandler()
@@ -93,27 +119,7 @@ func main() {
 
 	req := craftRequest(method, url, payload)
 
-	// Make the Go client to ignore the TLS verification
-	transCfg := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	authToken := sendRequest(req)
 
-	client := &http.Client{Transport: transCfg}
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(" ")
-	fmt.Println("########### OUTPUT: AUTH TOKEN #####################")
-	fmt.Println(string(body))
-
+	fmt.Println(authToken)
 }
