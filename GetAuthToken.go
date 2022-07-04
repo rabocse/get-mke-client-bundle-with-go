@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -42,22 +43,10 @@ func buildURL(clusterName string) string {
 	// Concatenate to build the URL
 	url := fmt.Sprintf("%s%s%s", protocol, clusterName, resource)
 
-	// fmt.Println("########### INPUT: Server ##########################")
-	// fmt.Println("Cluster: ", url)
-	// fmt.Println(" ")
-	// fmt.Println("########### INPUT: Credentials #####################")
-	// fmt.Println("Username: ", username)
-	// fmt.Println("Password: ", password) // Just for testing purposes.
-	// fmt.Println(" ")
-
 	return url
 }
 
-func main() {
-
-	cluster, username, password := flagsHandler()
-
-	url := buildURL(cluster)
+func craftPayload(userValue, passwordValue string) io.Reader {
 
 	// Marshall the credentials: From Go struct to JSON.
 
@@ -66,15 +55,25 @@ func main() {
 		Password string `json:"password"`
 	}
 
-	cred := &credentials{Username: username, Password: password}
-	credJSON, err := json.Marshal(cred)
+	cred := &credentials{Username: userValue, Password: passwordValue}
+	credJSON, err := json.Marshal(cred) // credJSON is type []byte
 	if err != nil {
 		fmt.Println(err)
-		return
+
 	}
-	fmt.Println("########### PARSED INPUT: Credentials in JSON ######")
-	fmt.Println(string(credJSON))        // credJSON is type []byte
-	payload := bytes.NewReader(credJSON) // so credJSON needs to be converted io.Reader to be accepted by http.NewRequest
+
+	p := bytes.NewReader(credJSON) // so credJSON needs to be converted io.Reader to be accepted by next function (http.NewRequest)
+
+	return p
+}
+
+func main() {
+
+	cluster, username, password := flagsHandler()
+
+	url := buildURL(cluster)
+
+	payload := craftPayload(username, password)
 
 	// Make the Go client to ignore the TLS verification
 	transCfg := &http.Transport{
