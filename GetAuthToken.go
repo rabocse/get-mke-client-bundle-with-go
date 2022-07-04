@@ -13,6 +13,7 @@ import (
 
 const method string = "POST"
 
+// flagsHander parses the flags passed by the user via CLI
 func flagsHandler() (c, u, p string) {
 
 	// Requesting flags to user via CLI.
@@ -33,10 +34,10 @@ func flagsHandler() (c, u, p string) {
 
 }
 
+//  buildURL returns a valid string URL
 func buildURL(clusterName string) string {
 
 	// Define the components for the HTTP Request.
-
 	const protocol string = "https://"
 	const resource string = "/auth/login"
 
@@ -46,10 +47,10 @@ func buildURL(clusterName string) string {
 	return url
 }
 
+// craftPayload prepares the credentials to be added as payload to a valid HTTP(s) request.
 func craftPayload(userValue, passwordValue string) io.Reader {
 
 	// Marshall the credentials: From Go struct to JSON.
-
 	type credentials struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -67,6 +68,7 @@ func craftPayload(userValue, passwordValue string) io.Reader {
 	return p
 }
 
+// craftRequest prepares a valid HTTP request with a POST method and the specified URL and payload.
 func craftRequest(m string, u string, p io.Reader) *http.Request {
 
 	// Build the request (req) with the previous components
@@ -83,6 +85,7 @@ func craftRequest(m string, u string, p io.Reader) *http.Request {
 
 }
 
+// sendRequest executes the so far crafted Request.
 func sendRequest(r *http.Request) string {
 
 	// Make the Go client to ignore the TLS verification
@@ -111,15 +114,21 @@ func sendRequest(r *http.Request) string {
 
 func main() {
 
+	// Values are passed via CLI
 	cluster, username, password := flagsHandler()
 
+	// Cluster URL is built.
 	url := buildURL(cluster)
 
+	// Credentials are parsed to be payload.
 	payload := craftPayload(username, password)
 
+	// Crafting a valid HTTPS request with TLS ignore.
 	req := craftRequest(method, url, payload)
 
+	// Sending the request and getting a valid authToken
 	authToken := sendRequest(req)
 
+	// Printing the authentication token
 	fmt.Println(authToken)
 }
