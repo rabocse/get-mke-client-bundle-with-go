@@ -10,6 +10,8 @@ import (
 	"net/http"
 )
 
+const method string = "POST"
+
 func flagsHandler() (c, u, p string) {
 
 	// Requesting flags to user via CLI.
@@ -30,25 +32,32 @@ func flagsHandler() (c, u, p string) {
 
 }
 
+func buildURL(clusterName string) string {
+
+	// Define the components for the HTTP Request.
+
+	const protocol string = "https://"
+	const resource string = "/auth/login"
+
+	// Concatenate to build the URL
+	url := fmt.Sprintf("%s%s%s", protocol, clusterName, resource)
+
+	// fmt.Println("########### INPUT: Server ##########################")
+	// fmt.Println("Cluster: ", url)
+	// fmt.Println(" ")
+	// fmt.Println("########### INPUT: Credentials #####################")
+	// fmt.Println("Username: ", username)
+	// fmt.Println("Password: ", password) // Just for testing purposes.
+	// fmt.Println(" ")
+
+	return url
+}
+
 func main() {
 
 	cluster, username, password := flagsHandler()
 
-	// Define the components for the HTTP Request.
-	const method string = "POST"
-
-	protocol := "https://"
-	resource := "/auth/login"
-
-	// Concatenate to build the URL
-	url := fmt.Sprintf("%s%s%s", protocol, cluster, resource)
-	fmt.Println("########### INPUT: Server ##########################")
-	fmt.Println("Cluster: ", url)
-	fmt.Println(" ")
-	fmt.Println("########### INPUT: Credentials #####################")
-	fmt.Println("Username: ", username)
-	fmt.Println("Password: ", password) // Just for testing purposes.
-	fmt.Println(" ")
+	url := buildURL(cluster)
 
 	// Marshall the credentials: From Go struct to JSON.
 
