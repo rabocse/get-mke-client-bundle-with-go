@@ -14,11 +14,8 @@ import (
 	"time"
 )
 
-func main() {
-
-	// It will be used later...
-	zipFileName := "bundle.zip"
-	downloadedFileName := "clientbundle"
+// flagsHander parses the flags passed by the user via CLI
+func flagsHandler() (c, t string) {
 
 	// Requesting flags to user via CLI.
 	// NOTE: flag.String returns a pointer.
@@ -28,9 +25,22 @@ func main() {
 	// Execute the command-line parsing
 	flag.Parse()
 
-	// Convert the string pointer to a string
-	cluster := *clus
-	token := *tokn
+	// Convert (dereference) the string pointer to get a string
+	c = *clus
+	t = *tokn
+
+	return c, t
+
+}
+
+func main() {
+
+	// It will be used later...
+	zipFileName := "bundle.zip"
+	downloadedFileName := "clientbundle"
+
+	// Values are passed via CLI
+	cluster, token := flagsHandler()
 
 	// Define the components for the HTTP Request.
 	const method string = "GET"
