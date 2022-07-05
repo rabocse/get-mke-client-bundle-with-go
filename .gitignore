@@ -6,4 +6,6 @@ GetAuthToken
 GetClientBundle
 wip-GetAuthToken.go
 wip-GetAuthToken
+wip-GetClientBundle
+wip-GetClientBundle.go
 bundle.zip

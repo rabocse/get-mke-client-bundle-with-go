@@ -33,6 +33,19 @@ func flagsHandler() (c, t string) {
 
 }
 
+//  buildURL returns a valid string URL
+func buildURL(clusterName string) string {
+
+	// Define the components for the HTTP Request.
+	const protocol string = "https://"
+	const resource string = "/api/clientbundle"
+
+	// Concatenate to build the URL
+	url := fmt.Sprintf("%s%s%s", protocol, clusterName, resource)
+
+	return url
+}
+
 func main() {
 
 	// It will be used later...
@@ -45,11 +58,9 @@ func main() {
 	// Define the components for the HTTP Request.
 	const method string = "GET"
 
-	protocol := "https://"
-	resource := "/api/clientbundle"
+	// Cluster URL is built.
+	url := buildURL(cluster)
 
-	// Concatenate to build the URL
-	url := fmt.Sprintf("%s%s%s", protocol, cluster, resource)
 	fmt.Println("########### INPUT: Server ##########################")
 	fmt.Println("Cluster: ", url)
 	fmt.Println(" ")
