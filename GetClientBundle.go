@@ -101,13 +101,9 @@ func main() {
 		return
 	}
 
-	// Concatenate "Bearer" string + token varible to then pass in a Header
-
-	authToken := fmt.Sprintf("Bearer %s", token)
-
 	// Adding Authorization Header
-	req.Header.Add("Authorization", authToken) //
-	req.Header.Add("Accept-Encoding", "gzip")  // I think this can be removed.
+	req.Header.Add("Authorization", token)    //
+	req.Header.Add("Accept-Encoding", "gzip") // I think this can be removed.
 
 	res, err := client.Do(req)
 	if err != nil {
