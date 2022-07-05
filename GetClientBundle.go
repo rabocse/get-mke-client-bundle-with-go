@@ -27,7 +27,8 @@ func flagsHandler() (c, t string) {
 
 	// Convert (dereference) the string pointer to get a string
 	c = *clus
-	t = *tokn
+	token := *tokn
+	t = fmt.Sprintf("Bearer %s", token)
 
 	return c, t
 
@@ -44,6 +45,23 @@ func buildURL(clusterName string) string {
 	url := fmt.Sprintf("%s%s%s", protocol, clusterName, resource)
 
 	return url
+}
+
+// craftRequest prepares a valid HTTP request with a POST method and the specified URL and payload.
+func craftRequest(m string, u string, p io.Reader) *http.Request {
+
+	// Build the request (req) with the previous components
+	req, err := http.NewRequest(m, u, p)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Header to specify that our request sends plain text format.
+	req.Header.Add("Content-Type", "text/plain")
+
+	return req
+
 }
 
 func main() {
