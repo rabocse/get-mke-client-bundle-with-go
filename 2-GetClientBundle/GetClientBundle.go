@@ -104,17 +104,13 @@ func main() {
 	// Cluster URL is built.
 	url := buildURL(cluster)
 
-	fmt.Println("########### INPUT: Server ##########################")
-	fmt.Println("Cluster: ", url)
-	fmt.Println(" ")
-	fmt.Println("########### INPUT: Token #####################")
-	fmt.Println("Authentication Token: ", token) // Just for testing purposes.
-	fmt.Println(" ")
-
+	// Crafting a valid HTTPS request with TLS ignore.
 	req := craftRequest(method, url, token, nil)
 
+	// Sending the request and getting the file
 	body := sendRequest(req)
 
+	// Writing the file to the local filesystem
 	buf := new(bytes.Buffer)
 	w := zip.NewWriter(buf)
 	fh := &zip.FileHeader{
