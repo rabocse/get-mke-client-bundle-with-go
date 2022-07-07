@@ -47,7 +47,7 @@ func buildURL(clusterName string) string {
 	return url
 }
 
-// craftRequest prepares a valid HTTP request with a POST method and the specified URL and payload.
+// craftRequest prepares a valid HTTP request with the specified HTTP method, URL and payload("nil" is none)
 func craftRequest(m string, u string, h string, p io.Reader) *http.Request {
 
 	// Build the request (req) with the previous components
@@ -65,6 +65,7 @@ func craftRequest(m string, u string, h string, p io.Reader) *http.Request {
 
 }
 
+// sendRequest executes the so far crafted Request.
 func sendRequest(r *http.Request) []byte {
 
 	// Make the Go client to ignore the TLS verification
@@ -89,11 +90,44 @@ func sendRequest(r *http.Request) []byte {
 
 }
 
-func main() {
+// saveFile saves the downloaded body to the local filesystem
+func saveFile(b []byte) {
 
-	// It will be used later...
-	zipFileName := "bundle.zip"
-	downloadedFileName := "clientbundle"
+	// Declaring constants to use
+	const zipFileName string = "bundle.zip"
+	const downloadedFileName string = "clientbundle"
+
+	buf := new(bytes.Buffer)
+	w := zip.NewWriter(buf)
+	fh := &zip.FileHeader{
+		Name:     downloadedFileName,
+		Modified: time.Now(),
+		Method:   0, // This controls whether the files is extracted or inflated. ??
+	}
+	f, err := w.CreateHeader(fh)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := f.Write(b); err != nil {
+		log.Fatal(err)
+	}
+	err = w.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	file, err := os.Create(zipFileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err = io.Copy(file, buf); err != nil {
+		log.Fatal(err)
+	}
+	file.Close()
+	fmt.Println("Done.")
+
+}
+
+func main() {
 
 	// Values are passed via CLI
 	cluster, token := flagsHandler()
@@ -111,31 +145,6 @@ func main() {
 	body := sendRequest(req)
 
 	// Writing the file to the local filesystem
-	buf := new(bytes.Buffer)
-	w := zip.NewWriter(buf)
-	fh := &zip.FileHeader{
-		Name:     downloadedFileName,
-		Modified: time.Now(),
-		Method:   0, // This controls whether the files is extracted or inflated. ??
-	}
-	f, err := w.CreateHeader(fh)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err := f.Write(body); err != nil {
-		log.Fatal(err)
-	}
-	err = w.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	file, err := os.Create(zipFileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err = io.Copy(file, buf); err != nil {
-		log.Fatal(err)
-	}
-	file.Close()
-	fmt.Println("Done.")
+	saveFile(body)
+
 }
