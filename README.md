@@ -51,7 +51,7 @@ Done.
 ## Improvements
 
 - Both scripts accept flags for each needed parameter. This removes the need of hardcoding values in the source code whenever executing.
-- The source code was group in functions.
+- The source code was grouped in functions.
   
 
 ## Refactoring
