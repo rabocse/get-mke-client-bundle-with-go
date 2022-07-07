@@ -48,7 +48,7 @@ func buildURL(clusterName string) string {
 }
 
 // craftRequest prepares a valid HTTP request with a POST method and the specified URL and payload.
-func craftRequest(m string, u string, p io.Reader) *http.Request {
+func craftRequest(m string, u string, h string, p io.Reader) *http.Request {
 
 	// Build the request (req) with the previous components
 	req, err := http.NewRequest(m, u, p)
@@ -57,10 +57,35 @@ func craftRequest(m string, u string, p io.Reader) *http.Request {
 		fmt.Println(err)
 	}
 
-	// Header to specify that our request sends plain text format.
-	req.Header.Add("Content-Type", "text/plain")
+	// Adding Authorization Header
+	req.Header.Add("Authorization", h)        //
+	req.Header.Add("Accept-Encoding", "gzip") // I think this can be removed.
 
 	return req
+
+}
+
+func sendRequest(r *http.Request) []byte {
+
+	// Make the Go client to ignore the TLS verification
+	transCfg := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{Transport: transCfg}
+
+	res, err := client.Do(r)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return b
 
 }
 
@@ -86,38 +111,9 @@ func main() {
 	fmt.Println("Authentication Token: ", token) // Just for testing purposes.
 	fmt.Println(" ")
 
-	// Make the Go client to ignore the TLS verification
-	transCfg := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	req := craftRequest(method, url, token, nil)
 
-	client := &http.Client{Transport: transCfg}
-
-	// Build the request (req) with the previous components
-	req, err := http.NewRequest(method, url, nil)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Adding Authorization Header
-	req.Header.Add("Authorization", token)    //
-	req.Header.Add("Accept-Encoding", "gzip") // I think this can be removed.
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// fmt.Println(string(body))
+	body := sendRequest(req)
 
 	buf := new(bytes.Buffer)
 	w := zip.NewWriter(buf)
